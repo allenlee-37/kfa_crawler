@@ -95,25 +95,28 @@ for card_num in range(1, 11):
     team_infos.append(card_back)
     print(f'1페이지 카드 번호: {card_num}')
     driver.back()
+    time.sleep(1)
 
 page1 = pd.DataFrame({'팀명': team_names,
               '정보': team_infos})
 
 for page_num in tqdm(range(2, 100)):
     for card_num in range(1,11):
-            
+        time.sleep(5) 
         # 프레임 조정 하고
         driver.switch_to.default_content()
         driver.switch_to.frame('mainframe.VFrameSet.WorkFrame.form.div_work.form.WebBrowser00_WebBrowser')
         driver.implicitly_wait(10)
 
+        time.sleep(5) 
         driver.find_element(By.XPATH, "//*[@id='selSearchType']/option[text()='축구']").click()
         driver.implicitly_wait(10)
         driver.find_element(By.XPATH, "//*[@id='selSearchMasTitl']/option[text()='동호인축구일반']").click()
         driver.implicitly_wait(10)
+        time.sleep(15)  
 
         '''10 이상일 때는 계속해서 페이지를 올려가야함'''
-        if page_num>10:
+        if page_num>10 and page_num%10!=0:
             # 다음 버튼 누르기
             # 10의 배수 만큼 반복해서 눌러야함
             # //*[@id="page_DisAgent"]/li[12]/a
@@ -122,6 +125,11 @@ for page_num in tqdm(range(2, 100)):
                 driver.implicitly_wait(10)
                 time.sleep(10)
             # //*[@id="page_DisAgent"]/li[2]/a
+        elif page_num>10 and page_num%10==0:
+            for i in range(page_num//10-1):
+                driver.find_element(By.XPATH, '//*[@id="page_DisAgent"]/li[12]/a').click()
+                driver.implicitly_wait(10)
+                time.sleep(10)
         else: pass
         # page_num+1의 페이지 번호 누르기
         # 10을 넘어가면 다음 페이지 버튼을 누르도록 if문 추가해야함
