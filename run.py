@@ -102,72 +102,75 @@ page1 = pd.DataFrame({'팀명': team_names,
 
 for page_num in tqdm(range(2, 100)):
     for card_num in range(1,11):
-        time.sleep(5) 
-        # 프레임 조정 하고
-        driver.switch_to.default_content()
-        driver.switch_to.frame('mainframe.VFrameSet.WorkFrame.form.div_work.form.WebBrowser00_WebBrowser')
-        driver.implicitly_wait(10)
-
-        time.sleep(5) 
-        driver.find_element(By.XPATH, "//*[@id='selSearchType']/option[text()='축구']").click()
-        driver.implicitly_wait(10)
-        driver.find_element(By.XPATH, "//*[@id='selSearchMasTitl']/option[text()='동호인축구일반']").click()
-        driver.implicitly_wait(10)
-        time.sleep(15)  
-
-        '''10 이상일 때는 계속해서 페이지를 올려가야함'''
-        if page_num>10 and page_num%10!=0:
-            # 다음 버튼 누르기
-            # 10의 배수 만큼 반복해서 눌러야함
-            # //*[@id="page_DisAgent"]/li[12]/a
-            for i in range(page_num//10):
-                driver.find_element(By.XPATH, '//*[@id="page_DisAgent"]/li[12]/a').click()
-                driver.implicitly_wait(10)
-                time.sleep(10)
-            # //*[@id="page_DisAgent"]/li[2]/a
-        elif page_num>10 and page_num%10==0:
-            for i in range(page_num//10-1):
-                driver.find_element(By.XPATH, '//*[@id="page_DisAgent"]/li[12]/a').click()
-                driver.implicitly_wait(10)
-                time.sleep(10)
-        else: pass
-        # page_num+1의 페이지 번호 누르기
-        # 10을 넘어가면 다음 페이지 버튼을 누르도록 if문 추가해야함
-        if page_num%10 == 0:
-            button_number = 10
-        else: button_number = page_num%10+1
-        
-        driver.implicitly_wait(10)
-        time.sleep(10)
-        
-        driver.find_element(By.XPATH, f'//*[@id="page_DisAgent"]/li[{button_number}]/a').click()
-
-
         try:
+            time.sleep(5) 
+            # 프레임 조정 하고
+            driver.switch_to.default_content()
+            driver.switch_to.frame('mainframe.VFrameSet.WorkFrame.form.div_work.form.WebBrowser00_WebBrowser')
+            driver.implicitly_wait(10)
+
+            time.sleep(5) 
+            driver.find_element(By.XPATH, "//*[@id='selSearchType']/option[text()='축구']").click()
+            driver.implicitly_wait(10)
+            driver.find_element(By.XPATH, "//*[@id='selSearchMasTitl']/option[text()='동호인축구일반']").click()
+            driver.implicitly_wait(10)
+            time.sleep(15)  
+
+            '''10 이상일 때는 계속해서 페이지를 올려가야함'''
+            if page_num>10 and page_num%10!=0:
+                # 다음 버튼 누르기
+                # 10의 배수 만큼 반복해서 눌러야함
+                # //*[@id="page_DisAgent"]/li[12]/a
+                for i in range(page_num//10):
+                    driver.find_element(By.XPATH, '//*[@id="page_DisAgent"]/li[12]/a').click()
+                    driver.implicitly_wait(10)
+                    time.sleep(10)
+                # //*[@id="page_DisAgent"]/li[2]/a
+            elif page_num>10 and page_num%10==0:
+                for i in range(page_num//10-1):
+                    driver.find_element(By.XPATH, '//*[@id="page_DisAgent"]/li[12]/a').click()
+                    driver.implicitly_wait(10)
+                    time.sleep(10)
+            else: pass
+            # page_num+1의 페이지 번호 누르기
+            # 10을 넘어가면 다음 페이지 버튼을 누르도록 if문 추가해야함
+            if page_num%10 == 0:
+                button_number = 10
+            else: button_number = page_num%10+1
+            
             driver.implicitly_wait(10)
             time.sleep(10)
-            # 프레임 조정
-            driver.switch_to.default_content()
-            driver.switch_to.frame('mainframe.VFrameSet.WorkFrame.form.div_work.form.WebBrowser00_WebBrowser')
-            driver.implicitly_wait(10)
+            
+            driver.find_element(By.XPATH, f'//*[@id="page_DisAgent"]/li[{button_number}]/a').click()
 
-            # 팀 카드 클릭
-            driver.find_element(By.XPATH, f'//*[@id="teamBlogList1"]/div[{card_num}]').click()
-            driver.implicitly_wait(10)
 
-            driver.switch_to.default_content()
-            driver.switch_to.frame('mainframe.VFrameSet.WorkFrame.form.div_work.form.WebBrowser00_WebBrowser')
-            driver.implicitly_wait(10)
+            try:
+                driver.implicitly_wait(10)
+                time.sleep(10)
+                # 프레임 조정
+                driver.switch_to.default_content()
+                driver.switch_to.frame('mainframe.VFrameSet.WorkFrame.form.div_work.form.WebBrowser00_WebBrowser')
+                driver.implicitly_wait(10)
 
-            time.sleep(5)
-            team_name = driver.find_element(By.XPATH, '//*[@id="hTeamName"]').text
-            card_back = driver.find_element(By.XPATH, '//*[@id="content"]/div/div[1]/div/div[2]/div[1]/div/div[1]/div/div[2]/div').text
+                # 팀 카드 클릭
+                driver.find_element(By.XPATH, f'//*[@id="teamBlogList1"]/div[{card_num}]').click()
+                driver.implicitly_wait(10)
 
-            page1 = pd.concat([page1, pd.DataFrame({'팀명': [team_name],'정보': [card_back]})])
-            page1.to_excel(f'./result/backup-data/back-up{card_num//2}.xlsx')
-            print(f'{page_num} 페이지의 카드 번호: {card_num}, 열 갯수: {len(page1)}')
-            driver.back()
+                driver.switch_to.default_content()
+                driver.switch_to.frame('mainframe.VFrameSet.WorkFrame.form.div_work.form.WebBrowser00_WebBrowser')
+                driver.implicitly_wait(10)
+
+                time.sleep(5)
+                team_name = driver.find_element(By.XPATH, '//*[@id="hTeamName"]').text
+                card_back = driver.find_element(By.XPATH, '//*[@id="content"]/div/div[1]/div/div[2]/div[1]/div/div[1]/div/div[2]/div').text
+
+                page1 = pd.concat([page1, pd.DataFrame({'팀명': [team_name],'정보': [card_back]})])
+                page1.to_excel(f'./result/backup-data/back-up{card_num//2}.xlsx')
+                print(f'{page_num} 페이지의 카드 번호: {card_num}, 열 갯수: {len(page1)}')
+                driver.back()
+            except: print(f'error in 페이지 {page_num}번, 카드 {card_num}번')
+            finally: pass
         except: print(f'error in 페이지 {page_num}번, 카드 {card_num}번')
-        finally: pass
+        finally: pass         
 
 page1.to_excel(f'./result/final-result.xlsx')
