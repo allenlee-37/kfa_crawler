@@ -99,8 +99,6 @@ for card_num in range(1, 11):
 page1 = pd.DataFrame({'팀명': team_names,
               '정보': team_infos})
 
-page1.to_csv('test_result.csv')
-
 for page_num in tqdm(range(2, 100)):
     for card_num in range(1,11):
             
