@@ -103,19 +103,20 @@ page1 = pd.DataFrame({'팀명': team_names,
 for page_num in tqdm(range(2, 100)):
     for card_num in range(1,11):
         try:
-            time.sleep(5) 
-            # 프레임 조정 하고
+            # 프레임 조정 
             driver.switch_to.default_content()
             driver.switch_to.frame('mainframe.VFrameSet.WorkFrame.form.div_work.form.WebBrowser00_WebBrowser')
             driver.implicitly_wait(10)
 
-            time.sleep(5) 
+            # 드롭 다운 '축구' 선택
+            # 드롭 다운 '동호인 축구 일반' 선택
+            time.sleep(5)
             driver.find_element(By.XPATH, "//*[@id='selSearchType']/option[text()='축구']").click()
             driver.implicitly_wait(10)
+            time.sleep(1)
             driver.find_element(By.XPATH, "//*[@id='selSearchMasTitl']/option[text()='동호인축구일반']").click()
-            driver.implicitly_wait(10)
-            time.sleep(15)  
-
+            driver.implicitly_wait(10) 
+            time.sleep(10)
             '''10 이상일 때는 계속해서 페이지를 올려가야함'''
             if page_num>10 and page_num%10!=0:
                 # 다음 버튼 누르기
@@ -167,10 +168,17 @@ for page_num in tqdm(range(2, 100)):
                 page1 = pd.concat([page1, pd.DataFrame({'팀명': [team_name],'정보': [card_back]})])
                 page1.to_excel(f'./result/backup-data/back-up{card_num//2}.xlsx')
                 print(f'{page_num} 페이지의 카드 번호: {card_num}, 열 갯수: {len(page1)}')
+                
+            except Exception as e: 
+                print(f'error in 페이지 {page_num}번, 카드 {card_num}번')
+                print(e)
+            finally:
                 driver.back()
-            except: print(f'error in 페이지 {page_num}번, 카드 {card_num}번')
-            finally: pass
-        except: print(f'error in 페이지 {page_num}번, 카드 {card_num}번')
+                time.sleep(3)
+                pass
+        except Exception as e: 
+            print(f'error in 페이지 {page_num}번, 카드 {card_num}번')
+            print(e)
         finally: pass         
 
 page1.to_excel(f'./result/final-result.xlsx')
