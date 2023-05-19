@@ -33,6 +33,8 @@ options.add_argument('disable-gpu')
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
 def validation_loading():
+    time.sleep(2)
+    driver.implicitly_wait(3)
     
     print(f'로딩이 없어지길 기다립니다 - {datetime.now()}')
     validator = 0
@@ -50,6 +52,8 @@ def validation_loading():
     print(f'로딩이 없음 - {datetime.now()}')
 
 def validation_frame():
+    time.sleep(2)
+    driver.implicitly_wait(3)
     
     print(f'프레임 나타나길 기다립니다. - {datetime.now()}')
     validator = 0
@@ -63,7 +67,7 @@ def validation_frame():
             time.sleep(2)
             validator += 1
             print(f'프레임이 없네? - {datetime.now()}')
-    time.sleep(3)
+    time.sleep(5)
     
 def open_main_site():
     driver.implicitly_wait(3)
@@ -97,26 +101,15 @@ def drop_down_option():
     return driver
 
 def crawl_page_team_name():
-    validator = 0
-    while validator < 70:
-        try:
-            elements = driver.find_elements(By.XPATH, '//h4[@class="card-title"]')
-            result = [elem.text for elem in elements]
-            if len(result) < 1: raise Exception
-            else: validator = 100
-        except: 
-            time.sleep(2)
-            validator += 1
-            if validator == 60:
-                driver.quit()
-                break
-    return result
+    elements = driver.find_elements(By.XPATH, '//h4[@class="card-title"]')
+    return [elem.text for elem in elements]
 
 def choose_page(page_num):
     if page_num%10==0:
         button_number = 11
     else:
         button_number = page_num%10+1 # 3번을 누르고 싶다면 4가 된다.
+    time.sleep(3)
 
     validator = 0
     while validator < 70:
@@ -130,7 +123,7 @@ def choose_page(page_num):
         except: 
             print('버튼 클릭이 안되나?')
             validator +=1
-            time.sleep(5)
+            time.sleep(2)
             if validator == 60:
                 driver.quit()
                 break
@@ -144,11 +137,9 @@ def next_page_button():
             next_page.send_keys(Keys.ENTER) 
             validator = 100
             print(f'다음 페이지 버튼이 눌러졌다!')
-            what_decimal = driver.find_element(By.XPATH, f'/html/body/div[3]/section/div/div[3]/div[2]/div/ul/li[2]/a')
-            print(f'{int(what_decimal.text)+10} 페이지까지 왔다.')
         except:
             print(f'버튼이 안 눌러진다... - {datetime.now()}')
-            time.sleep(5)
+            time.sleep(2)
             validator += 1
             if validator == 60: 
                 driver.quit()
@@ -160,7 +151,7 @@ def crawl_iteration(start, end):
     for i in range((start-1)//10): 
         next_page_button()
         validation_loading()
-        time.sleep(2)
+        time.sleep(5)
     
     validation_loading()
 
@@ -168,7 +159,7 @@ def crawl_iteration(start, end):
     else: choose_page(start)
 
     validation_loading()
-    time.sleep(2)
+    time.sleep(3)
 
     teams = []
     teams.extend(crawl_page_team_name())
@@ -182,15 +173,14 @@ def crawl_iteration(start, end):
         if (page_num)%10==1: next_page_button()
         else: choose_page(page_num)
         validation_loading()
-        time.sleep(1)
+        time.sleep(5)
 
         new_teams = crawl_page_team_name()
         new_row = pd.DataFrame({'팀명': new_teams,
                                 '페이지': page_num})
         result = pd.concat([result, new_row])
-        file_name = f'./result/팀명3/{start}-{page_num}-{end}-팀명'
-
-        result.to_csv(f'{file_name}.csv')
+        file_name = f'{start}-{page_num}-{end}-팀명'
+        result.to_csv(f'./result/팀명3/{file_name}.csv')
         print(f'>>>>>>>>> {file_name}.csv 저장되었음 >>>>>>>>>')
 
 def main():
@@ -206,8 +196,8 @@ def main():
         validation_frame()
         validation_loading()
         
-        start = 1
-        end = 12
+        start = 30
+        end = 500
         crawl_iteration(start, end)
         
         driver.quit()
