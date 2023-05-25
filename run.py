@@ -89,10 +89,10 @@ def open_team_page():
     search_team.send_keys(Keys.ENTER)        
     print('>>>>>>>>> 팀 페이지 연결 >>>>>>>>>')
     
-def drop_down_option():
+def drop_down_option(dropdown1, dropdown2):
     print('>>>>>>>>> 드랍 다운 옵션 클릭 >>>>>>>>>')
-    driver.find_element(By.XPATH, "//*[@id='selSearchType']/option[text()='축구']").click()
-    driver.find_element(By.XPATH, "//*[@id='selSearchMasTitl']/option[text()='동호인축구일반']").click()
+    driver.find_element(By.XPATH, f"//*[@id='selSearchType']/option[text()='{dropdown1}']").click()
+    driver.find_element(By.XPATH, f"//*[@id='selSearchMasTitl']/option[text()='{dropdown2}']").click()
     validation_loading()
     return driver
 
@@ -154,7 +154,7 @@ def next_page_button():
                 driver.quit()
                 break
 
-def crawl_iteration(start, end):
+def crawl_iteration(start, end, result_path):
     driver.implicitly_wait(3)
     '''시작 페이지로 이동'''
     for i in range((start-1)//10): 
@@ -177,7 +177,7 @@ def crawl_iteration(start, end):
     print(f'{start} 페이지 수집 완료')
 
     '''이후 반복적으로 수집'''
-    for page_num in range(start+1, end):
+    for page_num in tqdm(range(start+1, end)):
         print(f'{page_num} 페이지 작업 시작 - {datetime.now()}')
         if (page_num)%10==1: next_page_button()
         else: choose_page(page_num)
@@ -188,8 +188,8 @@ def crawl_iteration(start, end):
         new_row = pd.DataFrame({'팀명': new_teams,
                                 '페이지': page_num})
         result = pd.concat([result, new_row])
-        file_name = f'./result/팀명3/{start}-{page_num}-{end}-팀명'
 
+        file_name = f'result_path/{start}-{end}-{page_num}-팀명'
         result.to_csv(f'{file_name}.csv')
         print(f'>>>>>>>>> {file_name}.csv 저장되었음 >>>>>>>>>')
 
@@ -202,13 +202,12 @@ def main():
         validation_frame()
         validation_loading()
         
-        drop_down_option()
+        drop_down_option(dropdown1 = '축구', dropdown2 = '초등')
         validation_frame()
         validation_loading()
         
-        start = 1
-        end = 12
-        crawl_iteration(start, end)
+        result_folder = 'result/초등'
+        crawl_iteration(start=0, end=66, result_path=result_folder)
         
         driver.quit()
     except: 
